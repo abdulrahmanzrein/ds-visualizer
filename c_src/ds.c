@@ -17,6 +17,7 @@ list_t *list_create(void)
     }
 
     list->head = NULL;
+    list->tail = NULL;
     list->size = 0;
     return list;
 }
@@ -65,21 +66,18 @@ void list_push_back(list_t *list, int value)
     new_node->value = value;
     new_node->next = NULL;
 
-    if (list->head == NULL)
+    if (list->tail == NULL)
     {
         list->head = new_node;
-        list->size++;
+        list->tail = new_node;
     }
     else
     {
-        node_t *current = list->head;
-        while (current->next != NULL)
-        {
-            current = current->next;
-        }
-        current->next = new_node;
-        list->size++;
+        list->tail->next = new_node;
+        list->tail = new_node;
     }
+
+    list->size++;
 }
 
 int list_pop_front(list_t *list, int *out_value)
@@ -99,6 +97,12 @@ int list_pop_front(list_t *list, int *out_value)
     }
 
     list->head = tofree->next;
+
+    if (list->head == NULL)
+    {
+        list->tail = NULL;
+    }
+
     free(tofree);
     list->size--;
 
@@ -115,10 +119,8 @@ size_t list_size(const list_t *list)
     return list->size;
 }
 
-
 node_t *list_head(const list_t *list)
 {
     assert(list != NULL);
     return list->head;
 }
-
