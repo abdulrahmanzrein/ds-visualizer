@@ -24,6 +24,11 @@ list_t *list_create(void)
 // deletes the whole list and frees the memory
 void list_destroy(list_t *list)
 {
+    if (list == NULL)
+    {
+        return; // nothing to free
+    }
+
     node_t *current = list->head;
     while (current != NULL)
     {
@@ -63,6 +68,7 @@ void list_push_back(list_t *list, int value)
     if (list->head == NULL)
     {
         list->head = new_node;
+        list->size++;
     }
     else
     {
@@ -72,9 +78,47 @@ void list_push_back(list_t *list, int value)
             current = current->next;
         }
         current->next = new_node;
+        list->size++;
     }
 }
 
 int list_pop_front(list_t *list, int *out_value)
 {
+    assert(list != NULL);
+
+    if (list->head == NULL)
+    {
+        return 0; // list is empty
+    }
+
+    node_t *tofree = list->head;
+
+    if (out_value != NULL)
+    {
+        *out_value = tofree->value;
+    }
+
+    list->head = tofree->next;
+    free(tofree);
+    list->size--;
+
+    return 1; // success
 }
+
+/* =========================
+   Accessors (for visualization)
+   ========================= */
+
+size_t list_size(const list_t *list)
+{
+    assert(list != NULL);
+    return list->size;
+}
+
+
+node_t *list_head(const list_t *list)
+{
+    assert(list != NULL);
+    return list->head;
+}
+
